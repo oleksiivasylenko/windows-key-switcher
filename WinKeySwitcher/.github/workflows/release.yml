@@ -1,0 +1,93 @@
+name: build-once-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag (e.g., v1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_FILE: WinKeySwitcher.csproj
+  VERSION: ${{ inputs.version }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            platform: x64
+          - rid: win-x86
+            platform: x86
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Publish ${{ matrix.rid }}
+        run: >
+          dotnet publish $env:PROJECT_FILE
+          -c Release
+          -r ${{ matrix.rid }}
+          -p:PlatformTarget=${{ matrix.platform }}
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:PublishReadyToRun=true
+          -p:EnableCompressionInSingleFile=true
+          -p:DebugType=none
+          -p:DebugSymbols=false
+
+      - name: Prepare artifacts (+ SHA256)
+        shell: pwsh
+        run: |
+          $rid='${{ matrix.rid }}'
+          $ver='${{ env.VERSION }}'
+          $pub="bin/Release/net9.0-windows/$rid/publish"
+          if (!(Test-Path $pub)) { throw "Publish folder not found: $pub" }
+          New-Item -Force -ItemType Directory "dist/$rid" | Out-Null
+
+          $outExe = "WinKeySwitcher-$ver-$rid.exe"
+          Copy-Item "$pub/WinKeySwitcher.exe" "dist/$rid/$outExe"
+
+          $h = Get-FileHash "dist/$rid/$outExe" -Algorithm SHA256
+          "$($h.Hash.ToLower())  $outExe" | Out-File -Encoding ascii "dist/$rid/$outExe.sha256"
+
+      - name: Upload artifacts ${{ matrix.rid }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinKeySwitcher-${{ env.VERSION }}-${{ matrix.rid }}
+          path: dist/${{ matrix.rid }}/*
+          if-no-files-found: error
+
+  release:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-bundle
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: ${{ env.VERSION }}
+          files: |
+            release-bundle/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
