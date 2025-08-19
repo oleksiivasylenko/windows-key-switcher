@@ -63,6 +63,7 @@ Get-FileHash .\WinKeySwitcher-<version>-win-<platform>-<cs/fdd>.exe -Algorithm S
 # <version> & <platform> & <sc/fdd> → take these parts exactly as they appear in the downloaded file name
 
 # The output hash must match the value you copied from the GitHub release page.
+```
 
 ## License
 
