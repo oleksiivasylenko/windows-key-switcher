@@ -58,7 +58,9 @@ On each release page, GitHub shows a **SHA-256 checksum** for every file (click 
 
 **Windows (PowerShell):**
 ```powershell
-Get-FileHash .\WinKeySwitcher-<version>-win-x64-sc.exe -Algorithm SHA256
+Get-FileHash .\WinKeySwitcher-<version>-win-<platform>-<cs/fdd>.exe -Algorithm SHA256
+
+# <version> & <platform> & <sc/fdd> → take these parts exactly as they appear in the downloaded file name
 
 # The output hash must match the value you copied from the GitHub release page.
 
