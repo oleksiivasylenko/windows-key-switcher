@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 env:
-  PROJECT_FILE: WinKeySwitcher.csproj
+  PROJECT_FILE: WinKeySwitcher/WinKeySwitcher.csproj
   VERSION: ${{ inputs.version }}
 
 jobs:
