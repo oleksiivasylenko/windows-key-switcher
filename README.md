@@ -1,4 +1,4 @@
-# Windows Key Swithcer
+# Windows Key Switcher
 
 A tiny utility that lets you **turn off the left, right, or both Windows keys** with a single click.  
 No registry edits, no scripts, no hacks — just run it and play without interruptions. 🎮
