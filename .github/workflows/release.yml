@@ -20,10 +20,36 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # --- x64 ---
           - rid: win-x64
             platform: x64
+            selfContained: true
+            r2r: true
+            includeNative: true
+            compress: true
+            suffix: sc
+          - rid: win-x64
+            platform: x64
+            selfContained: false
+            r2r: false         # disable R2R for FDD single-file
+            includeNative: false
+            compress: true
+            suffix: fdd
+          # --- x86 ---
           - rid: win-x86
             platform: x86
+            selfContained: true
+            r2r: true
+            includeNative: true
+            compress: true
+            suffix: sc
+          - rid: win-x86
+            platform: x86
+            selfContained: false
+            r2r: false
+            includeNative: false
+            compress: true
+            suffix: fdd
 
     steps:
       - name: Checkout
@@ -37,16 +63,17 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Publish ${{ matrix.rid }}
+      - name: Publish ${{ matrix.rid }} (${{ matrix.suffix }})
         run: >
           dotnet publish $env:PROJECT_FILE
           -c Release
           -r ${{ matrix.rid }}
           -p:PlatformTarget=${{ matrix.platform }}
-          --self-contained true
+          --self-contained ${{ matrix.selfContained }}
           -p:PublishSingleFile=true
-          -p:PublishReadyToRun=true
-          -p:EnableCompressionInSingleFile=true
+          -p:PublishReadyToRun=${{ matrix.r2r }}
+          -p:EnableCompressionInSingleFile=${{ matrix.compress }}
+          -p:IncludeNativeLibrariesForSelfExtract=${{ matrix.includeNative }}
           -p:DebugType=none
           -p:DebugSymbols=false
 
@@ -55,7 +82,8 @@ jobs:
         run: |
           $rid='${{ matrix.rid }}'
           $tag='${{ inputs.version }}'
-          $projDir = Split-Path $env:PROJECT_FILE           # -> WinKeySwitcher
+          $suffix='${{ matrix.suffix }}'
+          $projDir = Split-Path $env:PROJECT_FILE
           $tfm = 'net9.0-windows'
           $pub = Join-Path $projDir "bin/Release/$tfm/$rid/publish"
 
@@ -63,16 +91,16 @@ jobs:
 
           New-Item -Force -ItemType Directory "dist/$rid" | Out-Null
 
-          $outExe = "WinKeySwitcher-$tag-$rid.exe"
+          $outExe = "WinKeySwitcher-$tag-$rid-$suffix.exe"
           Copy-Item "$pub/WinKeySwitcher.exe" "dist/$rid/$outExe"
 
           $h = Get-FileHash "dist/$rid/$outExe" -Algorithm SHA256
           "$($h.Hash.ToLower())  $outExe" | Out-File -Encoding ascii "dist/$rid/$outExe.sha256"
 
-      - name: Upload artifacts ${{ matrix.rid }}
+      - name: Upload artifacts ${{ matrix.rid }} (${{ matrix.suffix }})
         uses: actions/upload-artifact@v4
         with:
-          name: WinKeySwitcher-${{ inputs.version }}-${{ matrix.rid }}
+          name: WinKeySwitcher-${{ inputs.version }}-${{ matrix.rid }}-${{ matrix.suffix }}
           path: dist/${{ matrix.rid }}/*
           if-no-files-found: error
 
