@@ -17,10 +17,10 @@ This tool was built exactly for that reason: to avoid accidental desktop jumps w
 ## Features
 
 - 🚫 Disable **left**, **right**, or **both** Windows keys  
-- 🖱️ Super simple interface — no setup needed
+- 🖱️ Super simple interface — no setup needed  
 - 🎮 Perfect for gaming sessions (works with all games)  
 - 💾 Lightweight & portable (no installer)  
-- 🖥️ I think - it's compatible with all Windows including Windows 11
+- 🖥️ Tested on Windows 11… and I *guess* it should work on older versions too 
 
 ---
 
@@ -36,7 +36,7 @@ This tool was built exactly for that reason: to avoid accidental desktop jumps w
 
 ## Download
 
-👉 [See all releases here](https://github.com/oleksiivasylenko/windows-key-switcher/releases)  
+👉 [**Download EXE — see all releases here**](https://github.com/oleksiivasylenko/windows-key-switcher/releases)
 
 Each release contains the following in the **Assets** section:
 - `WinKeySwitcher-<version>-win-x64.exe`  
