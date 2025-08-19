@@ -39,10 +39,17 @@ This tool was built exactly for that reason: to avoid accidental desktop jumps w
 👉 [**Download EXE — see all releases here**](https://github.com/oleksiivasylenko/windows-key-switcher/releases)
 
 Each release contains the following in the **Assets** section:
-- `WinKeySwitcher-<version>-win-x64.exe`  
-- `WinKeySwitcher-<version>-win-x86.exe`  
+
+- `WinKeySwitcher-<version>-win-x64-sc.exe` → 64-bit **self-contained** build (includes .NET runtime)  
+- `WinKeySwitcher-<version>-win-x64-fdd.exe` → 64-bit **framework-dependent** build (requires .NET 9 installed)  
 - Matching `.sha256` files for integrity verification  
 
+### Which one should I choose?
+
+- ✅ **If you’re not sure** → grab the **64-bit self-contained** (`-x64-sc.exe`) — it works everywhere without extra dependencies.  
+- The **FDD (framework-dependent)** build is a smaller download but requires that you already have the **.NET 9 runtime** installed on your system.  
+- Use **x64** builds on 64-bit Windows (recomended).  
+- Use **x86** builds only if you specifically need 32-bit.
 ---
 
 ## Verify Integrity (SHA-256)

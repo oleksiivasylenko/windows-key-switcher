@@ -25,27 +25,18 @@ jobs:
             platform: x64
             selfContained: true
             r2r: true
-            includeNative: true
             suffix: sc
           - rid: win-x64
             platform: x64
             selfContained: false
             r2r: false
-            includeNative: false
             suffix: fdd
-          # --- x86 ---
+          # --- x86 (only self-contained) ---
           - rid: win-x86
             platform: x86
             selfContained: true
             r2r: true
-            includeNative: true
             suffix: sc
-          - rid: win-x86
-            platform: x86
-            selfContained: false
-            r2r: false
-            includeNative: false
-            suffix: fdd
 
     steps:
       - name: Checkout
@@ -73,7 +64,7 @@ jobs:
           -p:DebugType=none
           -p:DebugSymbols=false
 
-      - name: Prepare artifacts (+ SHA256)
+      - name: Prepare artifacts
         shell: pwsh
         run: |
           $rid='${{ matrix.rid }}'
@@ -90,14 +81,11 @@ jobs:
           $outExe = "WinKeySwitcher-$tag-$rid-$suffix.exe"
           Copy-Item "$pub/WinKeySwitcher.exe" "dist/$rid/$outExe"
 
-          $h = Get-FileHash "dist/$rid/$outExe" -Algorithm SHA256
-          "$($h.Hash.ToLower())  $outExe" | Out-File -Encoding ascii "dist/$rid/$outExe.sha256"
-
       - name: Upload artifacts ${{ matrix.rid }}-${{ matrix.suffix }}
         uses: actions/upload-artifact@v4
         with:
           name: WinKeySwitcher-${{ inputs.version }}-${{ matrix.rid }}-${{ matrix.suffix }}
-          path: dist/${{ matrix.rid }}/*
+          path: dist/${{ matrix.rid }}/*.exe
           if-no-files-found: error
 
   release:
@@ -120,6 +108,5 @@ jobs:
           name: ${{ inputs.version }}
           files: |
             release-bundle/*/*.exe
-            release-bundle/*/*.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
