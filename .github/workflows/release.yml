@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release tag (e.g., v1.0.0)'
+        description: 'Release tag (e.g., 1.0.0)'
         required: true
 
 permissions:
@@ -12,7 +12,6 @@ permissions:
 
 env:
   PROJECT_FILE: WinKeySwitcher/WinKeySwitcher.csproj
-  VERSION: ${{ inputs.version }}
 
 jobs:
   build:
@@ -55,12 +54,16 @@ jobs:
         shell: pwsh
         run: |
           $rid='${{ matrix.rid }}'
-          $ver='${{ env.VERSION }}'
-          $pub="bin/Release/net9.0-windows/$rid/publish"
+          $tag='${{ inputs.version }}'
+          $projDir = Split-Path $env:PROJECT_FILE           # -> WinKeySwitcher
+          $tfm = 'net9.0-windows'
+          $pub = Join-Path $projDir "bin/Release/$tfm/$rid/publish"
+
           if (!(Test-Path $pub)) { throw "Publish folder not found: $pub" }
+
           New-Item -Force -ItemType Directory "dist/$rid" | Out-Null
 
-          $outExe = "WinKeySwitcher-$ver-$rid.exe"
+          $outExe = "WinKeySwitcher-$tag-$rid.exe"
           Copy-Item "$pub/WinKeySwitcher.exe" "dist/$rid/$outExe"
 
           $h = Get-FileHash "dist/$rid/$outExe" -Algorithm SHA256
@@ -69,7 +72,7 @@ jobs:
       - name: Upload artifacts ${{ matrix.rid }}
         uses: actions/upload-artifact@v4
         with:
-          name: WinKeySwitcher-${{ env.VERSION }}-${{ matrix.rid }}
+          name: WinKeySwitcher-${{ inputs.version }}-${{ matrix.rid }}
           path: dist/${{ matrix.rid }}/*
           if-no-files-found: error
 
@@ -85,8 +88,8 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.VERSION }}
-          name: ${{ env.VERSION }}
+          tag_name: ${{ inputs.version }}
+          name: ${{ inputs.version }}
           files: |
             release-bundle/**/*
         env:
