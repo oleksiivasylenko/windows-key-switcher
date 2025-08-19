@@ -55,12 +55,13 @@ Each release contains the following in the **Assets** section:
 ## Verify Integrity (SHA-256)
 
 After downloading, you can verify that the executable is authentic and hasn’t been tampered with.  
-Each `.exe` has a corresponding `.sha256` file with the expected hash.
+On each release page, GitHub shows a **SHA-256 checksum** for every file (click the *Copy SHA256* button).
 
 **Windows (PowerShell):**
 ```powershell
-Get-FileHash .\WinKeySwitcher-<version>-win-x64.exe -Algorithm SHA256
-Get-Content .\WinKeySwitcher-<version>-win-x64.exe.sha256
+Get-FileHash .\WinKeySwitcher-<version>-win-x64-sc.exe -Algorithm SHA256
+
+# The output hash must match the value you copied from the GitHub release page.
 
 ## License
 
