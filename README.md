@@ -42,7 +42,6 @@ Each release contains the following in the **Assets** section:
 
 - `WinKeySwitcher-<version>-win-x64-sc.exe` → 64-bit **self-contained** build (includes .NET runtime)  
 - `WinKeySwitcher-<version>-win-x64-fdd.exe` → 64-bit **framework-dependent** build (requires .NET 9 installed)  
-- Matching `.sha256` files for integrity verification  
 
 ### Which one should I choose?
 
