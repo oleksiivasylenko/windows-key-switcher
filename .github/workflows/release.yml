@@ -85,12 +85,17 @@ jobs:
         with:
           path: release-bundle
 
+      - name: List files (debug)
+        shell: bash
+        run: ls -R release-bundle
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.version }}
           name: ${{ inputs.version }}
           files: |
-            release-bundle/**/*
+            release-bundle/*/*.exe
+            release-bundle/*/*.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
