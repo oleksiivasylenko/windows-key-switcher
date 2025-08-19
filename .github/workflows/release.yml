@@ -26,14 +26,12 @@ jobs:
             selfContained: true
             r2r: true
             includeNative: true
-            compress: true
             suffix: sc
           - rid: win-x64
             platform: x64
             selfContained: false
-            r2r: false         # disable R2R for FDD single-file
+            r2r: false
             includeNative: false
-            compress: true
             suffix: fdd
           # --- x86 ---
           - rid: win-x86
@@ -41,14 +39,12 @@ jobs:
             selfContained: true
             r2r: true
             includeNative: true
-            compress: true
             suffix: sc
           - rid: win-x86
             platform: x86
             selfContained: false
             r2r: false
             includeNative: false
-            compress: true
             suffix: fdd
 
     steps:
@@ -63,7 +59,7 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Publish ${{ matrix.rid }} (${{ matrix.suffix }})
+      - name: Publish ${{ matrix.rid }}-${{ matrix.suffix }}
         run: >
           dotnet publish $env:PROJECT_FILE
           -c Release
@@ -72,8 +68,8 @@ jobs:
           --self-contained ${{ matrix.selfContained }}
           -p:PublishSingleFile=true
           -p:PublishReadyToRun=${{ matrix.r2r }}
-          -p:EnableCompressionInSingleFile=${{ matrix.compress }}
-          -p:IncludeNativeLibrariesForSelfExtract=${{ matrix.includeNative }}
+          -p:EnableCompressionInSingleFile=${{ matrix.selfContained }}
+          -p:IncludeNativeLibrariesForSelfExtract=${{ matrix.selfContained }}
           -p:DebugType=none
           -p:DebugSymbols=false
 
@@ -97,7 +93,7 @@ jobs:
           $h = Get-FileHash "dist/$rid/$outExe" -Algorithm SHA256
           "$($h.Hash.ToLower())  $outExe" | Out-File -Encoding ascii "dist/$rid/$outExe.sha256"
 
-      - name: Upload artifacts ${{ matrix.rid }} (${{ matrix.suffix }})
+      - name: Upload artifacts ${{ matrix.rid }}-${{ matrix.suffix }}
         uses: actions/upload-artifact@v4
         with:
           name: WinKeySwitcher-${{ inputs.version }}-${{ matrix.rid }}-${{ matrix.suffix }}
@@ -113,7 +109,7 @@ jobs:
         with:
           path: release-bundle
 
-      - name: List files (debug)
+      - name: List files
         shell: bash
         run: ls -R release-bundle
 

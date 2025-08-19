@@ -9,8 +9,9 @@ $selfContainedAnswer = Read-Host "Build as self-contained? (y/n) [default: n]"
 $useSelfContained = ($selfContainedAnswer -match '^(y|Y)$')
 
 $publishSingleFile = "true"
-$enableCompression = "false"
+$enableCompression = if ($useSelfContained) { "true" } else { "false" }
 $includeNativeForSelfExtract = if ($useSelfContained) { "true" } else { "false" }
+
 $publishReadyToRun = if ($useSelfContained) { "true" } else { "false" }
 
 Write-Host ""
