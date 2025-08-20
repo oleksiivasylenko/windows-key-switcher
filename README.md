@@ -36,7 +36,7 @@ This tool was built exactly for that reason: to avoid accidental desktop jumps w
 
 ## Download
 
-👉 [**Download EXE — see all releases here**](https://github.com/oleksiivasylenko/windows-key-switcher/releases)
+👉 [**Download EXE - see all releases here**](https://github.com/oleksiivasylenko/windows-key-switcher/releases)
 
 Each release contains the following in the **Assets** section:
 
